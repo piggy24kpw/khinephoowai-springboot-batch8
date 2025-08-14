@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello My Thymeleaf app</title>
+</head>
+<body>
+    <h1 th:text="'Hello, ' + ${name} + '!' ">Hello, World!</h1>
+    <p>
+        Today is: <span th:text="${date}">Date here</span>
+    </p>
+    <ul>
+        <li th:each="item : ${items}" th:text="${item}"></li>
+    </ul>
+</body>
+</html>

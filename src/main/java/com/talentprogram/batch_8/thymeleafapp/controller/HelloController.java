@@ -1,5 +1,8 @@
 package com.talentprogram.batch_8.thymeleafapp.controller;
 
+import com.talentprogram.batch_8.thymeleafapp.model.Task;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,40 +14,6 @@ import java.util.List;
 
 @Controller
 public class HelloController {
-    private int id;
-    private String description;
-    private String status;
-
-    public HelloController(int id, String description, String status) {
-        this.status = status;
-        this.description = description;
-        this.id = id;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
 
     @GetMapping("/hello")
     public String helloPage(Model model){
@@ -73,10 +42,11 @@ public class HelloController {
 
     @GetMapping("/task")
     public String taskPage(Model model){
-        List<HelloController> tasks = new ArrayList<>();
-        tasks.add(new HelloController(1,"To do homework", "progress"));
-        tasks.add(new HelloController(2,"To clean my room", "undone"));
-        tasks.add(new HelloController(3, "To sleep", "undone"));
+        List<Task> tasks = List.of(
+                new Task(1, "To do homework", "In Progress"),
+                new Task(2, "To clean my room", "Undone"),
+                new Task(3, "To sleep", "Undone")
+        );
 
         model.addAttribute("task",tasks);
         return "task";

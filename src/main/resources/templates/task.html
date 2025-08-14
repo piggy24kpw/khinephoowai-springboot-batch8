@@ -5,16 +5,16 @@
     <title>Task with Thymeleaf</title>
 </head>
 <body>
-  <table border="1">
+  <table border="1" align="center" margin="10px" width="80%">
     <tr>
-      <th>ID</th>
-      <th>Description</th>
-      <th>Status</th>
+      <th align="center">ID</th>
+      <th align="center">Description</th>
+      <th align="center">Status</th>
     </tr>
-    <tr th:each = "task : ${tasks}">
-      <td th:text="${task.id}"></td>
-      <td th:text="${task.description"></td>
-      <td th:text="${task.status"></td>
+    <tr th:each="tasks : ${task}">
+      <td th:text="${tasks.id}" align="center"></td>
+      <td th:text="${tasks.description}" align="center"></td>
+      <td th:text="${tasks.status}" align="center"></td>
     </tr>
   </table>
 

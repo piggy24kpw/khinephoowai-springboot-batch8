@@ -20,9 +20,11 @@ public class Transaction {
     private long transactionId;
 
     @Column(name="transactionType")
+    @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
     @Column(name="transactionCategory")
+    @Enumerated(EnumType.STRING)
     private TransactionCategory transactionCategory;
 
     @Column(name="amount")

@@ -30,13 +30,14 @@ public class Account {
     @Column(name ="nrcNumber",nullable = false)
     private String nrcNumber;
 
-
     @Column(name ="address")
     private String address;
 
     @Column(name ="dateOfBirth")
     private LocalDate dateOfBirth;
 
+    @Column(name="balance")
+    private  double balance;
 
     @JsonProperty(value = "createdAt")
     @Column(name = "createdAt", nullable = false, updatable = false)

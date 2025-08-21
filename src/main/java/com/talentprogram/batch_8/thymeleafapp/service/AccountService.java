@@ -1,21 +1,22 @@
 package com.talentprogram.batch_8.thymeleafapp.service;
 
+import com.talentprogram.batch_8.thymeleafapp.dto.AccountDto;
 import com.talentprogram.batch_8.thymeleafapp.model.Account;
 import com.talentprogram.batch_8.thymeleafapp.model.enumType.TransactionType;
 import com.talentprogram.batch_8.thymeleafapp.repository.AccountRepository;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AccountService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
 
-    @Autowired
-    AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
     public  boolean saveAccount(Account account){
 
@@ -29,25 +30,45 @@ public class AccountService {
 
     }
 
-    public boolean addInitialBalance(String accountId, double initialBalance){
-        try{
-            Optional<Account> accountOptional = accountRepository.findById(accountId);
-            if (accountOptional.isEmpty()){
-                LOGGER.info("Your account does not exist!");
-                return false;
+    public boolean saveAccount(AccountDto accountDto) {
+        try {
+            Account account = new Account();
+            account.setAccountId(accountDto.getAccountId());
+            account.setAddress(accountDto.getAddress());
+            account.setUserName(accountDto.getUserName());
+            account.setPassword(accountDto.getPassword());
+            account.setNrcNumber(accountDto.getNrcNumber());
+            account.setEmail(accountDto.getEmail());
+            account.setBalance(0);
+            accountRepository.save(account);
+            return true;
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+        return false;
+    }
+
+    public  boolean addInitialBalance(String accountId,double initialBalance){
+
+        try {
+            Optional<Account> accountOptional= accountRepository.findById(accountId);
+            if(accountOptional.isEmpty()){
+                LOGGER.info("Your account is not exist.");
+                return  false;
             }
             Account account = accountOptional.get();
             account.setBalance(initialBalance);
             accountRepository.save(account);
 
-            return true;
+            return  true;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            LOGGER.error(e.getMessage());
+            return  false;
         }
-
     }
 
     public Account updateBalance(String accountId, double amount, TransactionType transactionType){
+
         try {
             Optional<Account> accountOptional= accountRepository.findById(accountId);
             if(accountOptional.isEmpty()){
@@ -57,13 +78,23 @@ public class AccountService {
 
             double balance = account.getBalance();
 
-            if(TransactionType.expense == transactionType) {
-                balance -=amount;
+            if (account.getDeleteFlag() == 0) {
+                if(TransactionType.expense == transactionType) {
+                    balance -=amount;
+                }
+                else {
+                    balance +=amount;
+                }
+                account.setBalance(balance);
+            } else {
+                if(TransactionType.expense == transactionType) {
+                    balance +=amount;
+                }
+                else {
+                    balance -=amount;
+                }
+                account.setBalance(balance);
             }
-            else {
-                balance +=amount;
-            }
-            account.setBalance(balance);
 
             return accountRepository.save(account);
 
@@ -73,7 +104,7 @@ public class AccountService {
         }
     }
 
-
-
+    public Account findByUserName(String userName) {
+        return accountRepository.findByUserName(userName);
     }
-
+}

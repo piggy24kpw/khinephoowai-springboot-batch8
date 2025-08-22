@@ -31,4 +31,5 @@ public class AccountDto {
     private String address;
 
     private LocalDate dateOfBirth;
+
 }

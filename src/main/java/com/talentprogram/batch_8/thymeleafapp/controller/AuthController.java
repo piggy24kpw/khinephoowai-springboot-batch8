@@ -10,7 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Objects;
 
 @Controller
@@ -43,9 +42,9 @@ public class AuthController {
         return "redirect:/";
     }
 
-    @GetMapping
+    @GetMapping("/signIn")
     public String signInPage() {
-        return "SignIn";
+        return "signIn";
     }
 
     @PostMapping("/signIn")

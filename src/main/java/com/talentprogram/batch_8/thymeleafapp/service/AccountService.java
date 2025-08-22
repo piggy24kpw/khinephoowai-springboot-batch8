@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -67,7 +68,7 @@ public class AccountService {
         }
     }
 
-    public Account updateBalance(String accountId, double amount, TransactionType transactionType){
+    public Account updateBalance(String accountId, double amount, TransactionType transactionType, int deleteFlag){
 
         try {
             Optional<Account> accountOptional= accountRepository.findById(accountId);
@@ -78,7 +79,7 @@ public class AccountService {
 
             double balance = account.getBalance();
 
-            if (account.getDeleteFlag() == 0) {
+            if (deleteFlag == 0) {
                 if(TransactionType.expense == transactionType) {
                     balance -=amount;
                 }
@@ -106,5 +107,9 @@ public class AccountService {
 
     public Account findByUserName(String userName) {
         return accountRepository.findByUserName(userName);
+    }
+
+    public List<Account> getAllAccount(){
+        return accountRepository.findAll();
     }
 }

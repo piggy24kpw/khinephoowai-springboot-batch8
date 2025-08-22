@@ -1,136 +1,99 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hello My Thymeleaf App</title>
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Expense Tracker</title>
+    <style>
+        .addBtn {
+            transform: scale(1.05);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+            padding: 6px 12px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .addBtn:hover {
+            background: #45a049;
+        }
+    </style>
 </head>
 <body class="font-sans bg-gray-100">
+<h1>Welcome Back, <span th:text="${name}"></span></h1>
+<h2>Current Balance: <span th:text="${balance}"></span></h2>
 
-<div th:replace="navbar :: navbar"></div>
+<!-- Add Transaction Form -->
+<div>
+    <form th:action="@{/addTransaction}" method="post">
+        <label>Type:</label>
+        <select name="transactionType" required>
+            <option value="INCOME">Income</option>
+            <option value="EXPENSE">Expense</option>
+        </select>
 
-<!-- Main Container -->
-<div class="max-w-6xl mx-auto mt-10 bg-white p-8 rounded-2xl shadow-lg">
+        <label>Category:</label>
+        <select name="transactionCategory" required>
+            <option value="SALARY">Salary</option>
+            <option value="TIP">Tip</option>
+            <option value="SANACK">Snack</option>
+            <option value="PH_BILL">Ph_bill</option>
+            <option value="MEAL_BILL">Meal Bill</option>
+        </select>
 
-    <!-- Header -->
-    <div class="flex justify-between items-start mb-6">
-        <div>
-            <h2 class="text-3xl font-bold text-gray-800">Transaction List</h2>
-            <p class="text-gray-600 italic" th:if="${name != null}" th:text="${message}"></p>
-        </div>
-        <div class="text-right text-gray-500 text-sm">
-            <p th:text="${displayTime}"></p>
-        </div>
-    </div>
+        <label>Amount:</label>
+        <input type="number" name="amount" required />
 
-    <!-- Balance Card -->
-    <div th:if="${balance != null}" class="bg-green-50 border border-green-200 rounded-xl p-5 mb-8 text-center">
-        <p class="text-xl text-gray-800 font-medium">Current Balance</p>
-        <p class="text-3xl text-green-600 font-bold mt-2" th:text="${balance}">0</p>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="flex flex-wrap gap-4 mb-10">
-        <a th:href="@{/addIncome}" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">+ Add Income</a>
-        <a th:href="@{/addExpense}" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">+ Add Expense</a>
-        <a th:href="@{/inputMonth}" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">📅 View Monthly Summaries</a>
-    </div>
-
-    <!-- Transactions Table -->
-    <div class="overflow-x-auto">
-        <table class="w-full border-collapse rounded-lg shadow-sm bg-white overflow-hidden">
-            <thead>
-            <tr class="bg-blue-600 text-white text-sm uppercase tracking-wide">
-                <th class="px-4 py-3 text-left">Transaction Id</th>
-                <th class="px-4 py-3 text-left">Type</th>
-                <th class="px-4 py-3 text-left">Category</th>
-                <th class="px-4 py-3 text-right">Amount</th>
-                <th class="px-4 py-3 text-left">Created At</th>
-                <th class="px-4 py-3 text-left">Updated At</th>
-                <th class="px-4 py-3 text-center">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="item : ${transactions}" class="odd:bg-gray-50 even:bg-white hover:bg-gray-100 transition">
-                <td class="px-4 py-2 text-center" th:text="${item.transactionId}"></td>
-                <td class="px-4 py-2 text-center font-medium text-blue-700" th:text="${item.transactionType}"></td>
-                <td class="px-4 py-2 text-center" th:text="${item.transactionCategory}"></td>
-                <td class="px-4 py-2 text-right font-semibold text-gray-800" th:text="${item.amount}"></td>
-                <td class="px-4 py-2 text-center" th:text="${dtf.formatDateTime(item.createdAt)}"></td>
-                <td class="px-4 py-2 text-center" th:text="${dtf.formatDateTime(item.updatedAt)}"></td>
-                <td class="px-4 py-2 text-center flex justify-center gap-2">
-                    <!-- Edit Button -->
-                    <a th:href="@{'/editTransaction/' + ${item.transactionId}}"
-                       class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition text-sm">Edit</a>
-                    <!-- Delete Button -->
-                    <a th:href="@{'/deleteTransaction/' + ${item.transactionId}}"
-                       class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition text-sm">Delete</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Add Transaction Form -->
-    <div th:if="${showForm}" class="mt-10 flex justify-center">
-        <form th:action="@{/addTransaction}" th:object="${transactionInput}" method="post"
-              class="w-96 bg-gray-50 p-6 rounded-xl shadow-md">
-            <h2 class="text-xl font-bold text-center text-gray-800 mb-6">Add Transaction</h2>
-
-            <input type="hidden" th:name="type" th:value="${type}" />
-
-            <label class="block mb-2 text-gray-700">Category:</label>
-            <select th:field="*{transactionCategory}" class="w-full mb-4 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="" disabled selected>Select a category</option>
-                <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
-            </select>
-
-            <label class="block mb-2 text-gray-700">Amount:</label>
-            <input type="number" th:field="*{amount}" required
-                   class="w-full mb-4 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-            <button type="submit"
-                    class="w-full py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-700 transition">
-                Submit
-            </button>
-
-            <p th:if="${errorMessage}" th:text="${errorMessage}" class="text-red-500 text-sm mt-2 text-center"></p>
-        </form>
-    </div>
-
-    <!-- Edit Transaction Form -->
-    <div th:if="${showEdit}" class="mt-10 flex justify-center">
-        <form th:action="@{/editTransaction}" th:object="${transaction}" method="post"
-              class="w-96 bg-gray-50 p-6 rounded-xl shadow-md">
-            <h2 class="text-xl font-bold text-center text-gray-800 mb-6">Edit Transaction</h2>
-
-            <input type="hidden" th:field="*{transactionId}" />
-
-            <label class="block mb-2 text-gray-700">Type:</label>
-            <select th:field="*{transactionType}" class="w-full mb-4 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option th:each="type : ${types}" th:value="${type}" th:text="${type}"></option>
-            </select>
-
-            <label class="block mb-2 text-gray-700">Category:</label>
-            <select th:field="*{transactionCategory}" class="w-full mb-4 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
-            </select>
-
-            <label class="block mb-2 text-gray-700">Amount:</label>
-            <input type="number" th:field="*{amount}" required
-                   class="w-full mb-4 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-            <button type="submit"
-                    class="w-full py-2 bg-yellow-500 text-white rounded font-bold hover:bg-yellow-600 transition">
-                Update
-            </button>
-
-            <p th:if="${errorMessage}" th:text="${errorMessage}" class="text-red-500 text-sm mt-2 text-center"></p>
-        </form>
-    </div>
+        <button type="submit">Add Transaction</button>
+    </form>
 
 </div>
+
+<h1>Monthly Transactions</h1>
+<h3 th:text="'Hello, ' + ${name} + '! Balance: ' + ${balance}"></h3>
+<h4 th:text="'Month: ' + ${month} + ', Year: ' + ${year}"></h4>
+
+<table border="1" cellpadding="6" cellspacing="0">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Type</th>
+        <th>Category</th>
+        <th>Amount</th>
+        <th>Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="t : ${transactions}">
+        <td th:text="${t.transactionId}"></td>
+        <td th:text="${t.transactionType}" th:class="${t.transactionType == 'INCOME'} ? 'income' : 'expense'"></td>
+        <td th:text="${t.transactionCategory}"></td>
+        <td th:text="${t.amount}"></td>
+        <td th:text="${t.createdAt}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- Transaction List -->
+<h3>All Transactions</h3>
+<table border="1" cellpadding="6" cellspacing="0">
+    <thead>
+    <tr>
+        <th>Transaction ID</th>
+        <th>Transaction Type</th>
+        <th>Transaction Category</th>
+        <th>Amount</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="transaction : ${transactions}">
+        <td th:text="${transaction.transactionId}"></td>
+        <td th:text="${transaction.transactionType}"></td>
+        <td th:text="${transaction.transactionCategory}"></td>
+        <td th:text="${transaction.amount}"></td>
+    </tr>
+    </tbody>
+</table>
 </body>
 </html>

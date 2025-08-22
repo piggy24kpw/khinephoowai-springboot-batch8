@@ -1,5 +1,6 @@
 package com.talentprogram.batch_8.thymeleafapp;
 
+//import com.talentprogram.batch_8.thymeleafapp.dto.AccountDto;
 import com.talentprogram.batch_8.thymeleafapp.model.Account;
 import com.talentprogram.batch_8.thymeleafapp.model.Transaction;
 import com.talentprogram.batch_8.thymeleafapp.model.enumType.TransactionCategory;
@@ -12,7 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-//@SpringBootTest
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
 class ThymeleafappApplicationTests {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ThymeleafappApplicationTests.class);
@@ -81,21 +86,21 @@ class ThymeleafappApplicationTests {
 	void testAddTransaction(){
 		Transaction transaction=new Transaction();
 
-		/*transaction.setTransactionId(System.currentTimeMillis());
+		transaction.setTransactionId(System.currentTimeMillis());
 		transaction.setTransactionCategory(TransactionCategory.SNACK);
 		transaction.setTransactionType(TransactionType.expense);
-		transaction.setAmount(10000);
-		transaction.setAccountId("09777666555");*/
-
-		transaction.setTransactionId(System.currentTimeMillis());
-		transaction.setTransactionCategory(TransactionCategory.TIP);
-		transaction.setTransactionType(TransactionType.income);
 		transaction.setAmount(15000);
 		transaction.setAccountId("09777666555");
 
+		/*transaction.setTransactionId(System.currentTimeMillis());
+		transaction.setTransactionCategory(TransactionCategory.TIP);
+		transaction.setTransactionType(TransactionType.income);
+		transaction.setAmount(15000);
+		transaction.setAccountId("09777666555");*/
+
 		transactionService.saveNewTransaction(transaction);
 
-		Account updatedAccount = accountService.updateBalance(transaction.getAccountId(),transaction.getAmount(),transaction.getTransactionType());
+		Account updatedAccount = accountService.updateBalance(transaction.getAccountId(),transaction.getAmount(),transaction.getTransactionType(), transaction.getDeleteFlag());
 
 		LOGGER.info(updatedAccount.toString());
 
@@ -125,14 +130,34 @@ class ThymeleafappApplicationTests {
 				transactionService.getAllTransaction(accountId));
 	}
 
-	//@Test
+	@Test
 	void testGetTransactionByMonth(){
 		String accountId = "09777666555";
         int month = 8;
         int year = 2025;
+		List<Transaction> result = transactionService.getTransactionByMonth(accountId,month,year);
+		LOGGER.info("Monthly transaction summary : {}",result);
 
-		LOGGER.info("Monthly transaction summary : {}",
-				transactionService.getTransactionByMonth(accountId,month,year));
+		assertEquals(3,result.size());
+		assertEquals(15000,result.get(1).getAmount());
+
+	}
+
+	//@Test
+	void testUserAccount(){
+		LOGGER.info("Account size is {}",accountService.getAllAccount().size());
+		//assertEquals(7,accountService.getAllAccount().size());
+
+		/*Account account1 = new Account();
+		account1.setAccountId("09777666555");
+		account1.setAddress("Yangon");
+		account1.setUserName("mary");
+		account1.setPassword("mary@123");
+		account1.setNrcNumber("123456");
+		account1.setEmail("mary1@gmail.com");
+		account1.setBalance(0);
+		assertTrue(accountService.saveAccount(account1));*/
+
 	}
 
 }
